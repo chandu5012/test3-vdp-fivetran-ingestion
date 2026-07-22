@@ -1,0 +1,10 @@
+# Auto-generated inventory — mirrors GOVERNANCE.INGESTION_CONTROL
+source_system: test3
+target_env: dev
+connector_id: short_retrieve
+sync_frequency_minutes: 60
+tables:
+  - source_schema: public
+    source_table: inventory
+    target_table: inventory_1
+    is_active: true
