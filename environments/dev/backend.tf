@@ -1,10 +1,10 @@
 terraform {
-  # backend "s3" {
-    # bucket         = "vdp-terraform-state"
-    # key            = "fivetran/dev/terraform.tfstate"
-    # region         = "us-east-1"
-    # dynamodb_table = "vdp-terraform-locks-dev"
-  # }
+  required_providers {
+    fivetran = {
+      source  = "fivetran/fivetran"
+      version = "~> 1.0"
+    }
+  }
 }
 
 provider "fivetran" {
