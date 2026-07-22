@@ -4,7 +4,7 @@ on:
   pull_request:
     paths: ["connectors/**", "tables/**"]
   push:
-    branches: [main]
+    branches: [master]
     paths: ["connectors/**", "tables/**"]
   workflow_dispatch:
     inputs:
@@ -40,27 +40,29 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
       - name: terraform init
         working-directory: environments/${{ needs.detect-env.outputs.env }}
-        run: terraform init
+        run: terraform init -input=false
       - name: terraform plan
         working-directory: environments/${{ needs.detect-env.outputs.env }}
-        run: terraform plan -var-file=${{ needs.detect-env.outputs.env }}.tfvars -out=tfplan
+        run: terraform plan -input=false -var-file=${{ needs.detect-env.outputs.env }}.tfvars -out=tfplan
         env:
-          FIVETRAN_API_KEY: ${{ secrets[format('FIVETRAN_API_KEY_{0}', needs.detect-env.outputs.env)] }}
-          FIVETRAN_API_SECRET: ${{ secrets[format('FIVETRAN_API_SECRET_{0}', needs.detect-env.outputs.env)] }}
+          TF_VAR_fivetran_api_key: ${{ secrets[format('FIVETRAN_API_KEY_{0}', needs.detect-env.outputs.env)] }}
+          TF_VAR_fivetran_api_secret: ${{ secrets[format('FIVETRAN_API_SECRET_{0}', needs.detect-env.outputs.env)] }}
 
   apply-dev:
     needs: [detect-env, plan]
-    if: needs.detect-env.outputs.env == 'dev' && github.ref == 'refs/heads/main'
+    if: needs.detect-env.outputs.env == 'dev' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     environment: dev
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
       - working-directory: environments/dev
-        run: terraform init && terraform apply -auto-approve -var-file=dev.tfvars
+        run: |
+          terraform init -input=false
+          terraform apply -input=false -auto-approve -var-file=dev.tfvars
         env:
-          FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY_DEV }}
-          FIVETRAN_API_SECRET: ${{ secrets.FIVETRAN_API_SECRET_DEV }}
+          TF_VAR_fivetran_api_key: ${{ secrets.FIVETRAN_API_KEY_DEV }}
+          TF_VAR_fivetran_api_secret: ${{ secrets.FIVETRAN_API_SECRET_DEV }}
 
   apply-stg:
     needs: [detect-env, plan]
@@ -71,10 +73,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
       - working-directory: environments/stg
-        run: terraform init && terraform apply -auto-approve -var-file=stg.tfvars
+        run: |
+          terraform init -input=false
+          terraform apply -input=false -auto-approve -var-file=stg.tfvars
         env:
-          FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY_STG }}
-          FIVETRAN_API_SECRET: ${{ secrets.FIVETRAN_API_SECRET_STG }}
+          TF_VAR_fivetran_api_key: ${{ secrets.FIVETRAN_API_KEY_STG }}
+          TF_VAR_fivetran_api_secret: ${{ secrets.FIVETRAN_API_SECRET_STG }}
 
   apply-qa:
     needs: [detect-env, plan]
@@ -85,10 +89,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
       - working-directory: environments/qa
-        run: terraform init && terraform apply -auto-approve -var-file=qa.tfvars
+        run: |
+          terraform init -input=false
+          terraform apply -input=false -auto-approve -var-file=qa.tfvars
         env:
-          FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY_QA }}
-          FIVETRAN_API_SECRET: ${{ secrets.FIVETRAN_API_SECRET_QA }}
+          TF_VAR_fivetran_api_key: ${{ secrets.FIVETRAN_API_KEY_QA }}
+          TF_VAR_fivetran_api_secret: ${{ secrets.FIVETRAN_API_SECRET_QA }}
 
   apply-prod:
     needs: [detect-env, plan]
@@ -98,10 +104,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: master
       - uses: hashicorp/setup-terraform@v3
       - working-directory: environments/prod
-        run: terraform init && terraform apply -auto-approve -var-file=prod.tfvars
+        run: |
+          terraform init -input=false
+          terraform apply -input=false -auto-approve -var-file=prod.tfvars
         env:
-          FIVETRAN_API_KEY: ${{ secrets.FIVETRAN_API_KEY_PROD }}
-          FIVETRAN_API_SECRET: ${{ secrets.FIVETRAN_API_SECRET_PROD }}
+          TF_VAR_fivetran_api_key: ${{ secrets.FIVETRAN_API_KEY_PROD }}
+          TF_VAR_fivetran_api_secret: ${{ secrets.FIVETRAN_API_SECRET_PROD }}
