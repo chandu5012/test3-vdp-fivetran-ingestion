@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket         = "vdp-terraform-state"
-    key            = "fivetran/dev/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "vdp-terraform-locks-dev"
+    # bucket         = "vdp-terraform-state"
+    # key            = "fivetran/dev/terraform.tfstate"
+    # region         = "us-east-1"
+    # dynamodb_table = "vdp-terraform-locks-dev"
   }
 }
 
