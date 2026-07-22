@@ -5,6 +5,10 @@ terraform {
       version = "~> 1.0"
     }
   }
+  # Local state for now — no backend block means Terraform stores
+  # state on the machine running it. Fine for local/CI testing only;
+  # switch to a real remote backend (S3/GCS/Azure/Terraform Cloud)
+  # before using this for anything persistent.
 }
 
 provider "fivetran" {
